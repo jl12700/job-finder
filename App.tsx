@@ -1,20 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import JobFinderScreen from './screens/JobFinderScreen';
+import SavedJobsScreen from './screens/SavedJobsScreen';
+import ApplicationForm from './screens/ApplicationForm';
 
-export default function App() {
+const Stack = createStackNavigator();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="JobFinder">
+        <Stack.Screen
+          name="JobFinder"
+          component={JobFinderScreen}
+          options={{ title: 'Job Finder', headerStyle: { backgroundColor: '#007BFF' }, headerTintColor: '#fff' }}
+        />
+        <Stack.Screen
+          name="SavedJobs"
+          component={SavedJobsScreen}
+          options={{ title: 'Saved Jobs', headerStyle: { backgroundColor: '#007BFF' }, headerTintColor: '#fff' }}
+        />
+        <Stack.Screen
+          name="ApplicationForm"
+          component={ApplicationForm}
+          options={{ title: 'Apply Now', headerStyle: { backgroundColor: '#007BFF' }, headerTintColor: '#fff' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
+
+
