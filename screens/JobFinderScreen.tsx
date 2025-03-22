@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, Switch, ActivityIndicator, StyleSheet } from 'react-native';
 import uuid from 'react-native-uuid';
 
-// Define the Job type
 type Job = {
   id: string;
   title: string;
@@ -27,8 +26,8 @@ const JobFinderScreen = ({ navigation }) => {
           setJobs(jobArray.map(job => ({
             ...job,
             id: job.id || uuid.v4(),
-            company: job.company || 'Unknown Company', // Default value
-            salary: job.salary || 'Salary not specified', // Default value
+            company: job.company || 'Unknown Company', 
+            salary: job.salary || 'Salary not specified', 
           })));
         } else {
           console.error('API did not return a valid jobs array:', data);
@@ -39,7 +38,7 @@ const JobFinderScreen = ({ navigation }) => {
       .finally(() => setLoading(false));
   }, []);
 
-  // Update header with the dark mode toggle
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -81,7 +80,7 @@ const JobFinderScreen = ({ navigation }) => {
             <View style={[styles.jobCard, { backgroundColor: darkMode ? '#222' : '#fff' }]}>
               <Text style={[styles.jobTitle, { color: darkMode ? '#fff' : '#333' }]}>{item.title}</Text>
               <Text style={[styles.jobCompany, { color: darkMode ? '#ddd' : '#555' }]}>
-                Company: {item.company} {/* Display company */}
+                Company: {item.company}
               </Text>
               <Text style={[styles.jobSalary, { color: '#007BFF' }]}>
                 Salary: {item.salary} {/* Display salary */}
