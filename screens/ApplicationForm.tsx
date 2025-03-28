@@ -6,7 +6,8 @@ import * as Yup from 'yup';
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   email: Yup.string().email('Invalid email').required('Email is required'),
-  resume: Yup.string().required('Resume URL is required'),
+  contact: Yup.string().required('Contact number is required'),
+  resume: Yup.string().required('This section is required'),
 });
 
 const ApplicationForm = ({ route }: any) => {
@@ -14,9 +15,9 @@ const ApplicationForm = ({ route }: any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Apply for {job.title}</Text>
+      <Text style={styles.title}>Application for {job.title}</Text>
       <Formik
-        initialValues={{ name: '', email: '', resume: '' }}
+        initialValues={{ name: '', email: '', resume: '', contact: '', }}
         validationSchema={validationSchema}
         onSubmit={(values, { resetForm }) => {
           console.log('Application submitted:', values);
@@ -46,7 +47,17 @@ const ApplicationForm = ({ route }: any) => {
 
             <TextInput
               style={styles.input}
-              placeholder="Resume URL"
+              placeholder="Contact Number"
+              onChangeText={handleChange('contact')}
+              onBlur={handleBlur('contact')}
+              value={values.contact}
+            />
+            {touched.contact && errors.contact && <Text style={styles.error}>{errors.contact}</Text>}
+
+
+            <TextInput
+              style={styles.input}
+              placeholder="Why should we hire you?"
               onChangeText={handleChange('resume')}
               onBlur={handleBlur('resume')}
               value={values.resume}
@@ -66,10 +77,32 @@ const ApplicationForm = ({ route }: any) => {
 export default ApplicationForm;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
-  input: { borderWidth: 1, padding: 10, marginBottom: 8, borderRadius: 5 },
-  button: { backgroundColor: '#28A745', padding: 10, borderRadius: 5 },
-  buttonText: { color: '#fff', textAlign: 'center' },
-  error: { color: 'red', marginBottom: 5 },
+  container: {
+     flex: 1,
+      padding: 20 
+    },
+  title: { 
+    fontSize: 18,
+     fontWeight: 'bold', 
+     marginBottom: 10
+     },
+  input: {
+     borderWidth: 1,
+      padding: 10, 
+      marginBottom: 8, 
+      borderRadius: 5 
+    },
+  button: { 
+    backgroundColor: '#28A745',
+    padding: 10, 
+    borderRadius: 5 
+  },
+  buttonText: { 
+    color: '#fff', 
+    textAlign: 'center'
+   },
+  error: { 
+    color: 'red', 
+    marginBottom: 5
+   },
 });

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, Switch, ActivityIndicator, StyleSheet } from 'react-native';
 import uuid from 'react-native-uuid';
+import { useNavigation } from '@react-navigation/native';
 
 type Job = {
   id: string;
   title: string;
-  company: string;
-  salary: string;
+  companyName: string;
+  minSalary: string;
+  maxSalary: string;
+  locations: string[];
 };
 
-const JobFinderScreen = ({ navigation }) => {
+const JobFinderScreen = () => {
+  const navigation = useNavigation();
   const [jobs, setJobs] = useState<Job[]>([]); 
   const [savedJobs, setSavedJobs] = useState<Job[]>([]); 
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,8 +30,10 @@ const JobFinderScreen = ({ navigation }) => {
           setJobs(jobArray.map(job => ({
             ...job,
             id: job.id || uuid.v4(),
-            company: job.company || 'Unknown Company', 
-            salary: job.salary || 'Salary not specified', 
+            companyName: job.companyName || 'Unknown Company', 
+            minSalary: job.minSalary || 'Unavailable',
+            maxSalary: job.maxSalary || 'Unavailable',
+            locations: job.locations || ['Location not specified'],
           })));
         } else {
           console.error('API did not return a valid jobs array:', data);
@@ -38,21 +44,29 @@ const JobFinderScreen = ({ navigation }) => {
       .finally(() => setLoading(false));
   }, []);
 
-
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Switch
-          value={darkMode}
-          onValueChange={setDarkMode}
-          style={{ marginRight: 15 }}
-        />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('SavedJobs', { savedJobs, setSavedJobs })}
+            style={[styles.savedButton, { marginRight: 15 }]}
+          >
+            <Text style={styles.savedButtonText}>Saved ({savedJobs.length})</Text>
+          </TouchableOpacity>
+          <Switch
+            value={darkMode}
+            onValueChange={setDarkMode}
+          />
+        </View>
       ),
       title: 'Job Finder',
       headerStyle: { backgroundColor: darkMode ? '#121212' : '#f5f5f5' },
       headerTintColor: darkMode ? '#fff' : '#000',
     });
-  }, [darkMode, navigation]);
+  }, [darkMode, navigation, savedJobs]);
+  
+  
 
   const handleSaveJob = (job: Job) => {
     if (!savedJobs.some(savedJob => savedJob.id === job.id)) {
@@ -80,13 +94,20 @@ const JobFinderScreen = ({ navigation }) => {
             <View style={[styles.jobCard, { backgroundColor: darkMode ? '#222' : '#fff' }]}>
               <Text style={[styles.jobTitle, { color: darkMode ? '#fff' : '#333' }]}>{item.title}</Text>
               <Text style={[styles.jobCompany, { color: darkMode ? '#ddd' : '#555' }]}>
-                Company: {item.company}
+                Company: {item.companyName}
+              </Text>
+              <Text style={[styles.jobLocation, { color: darkMode ? '#ddd' : '#555' }]}>
+                Locations: {item.locations.join(', ')}
               </Text>
               <Text style={[styles.jobSalary, { color: '#007BFF' }]}>
-                Salary: {item.salary} {/* Display salary */}
+                Salary: {item.minSalary} - {item.maxSalary}
               </Text>
               <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.saveButton} onPress={() => handleSaveJob(item)}>
+                <TouchableOpacity 
+                  style={styles.saveButton} 
+                  onPress={() => handleSaveJob(item)}
+                  disabled={savedJobs.some(savedJob => savedJob.id === item.id)}
+                >
                   <Text style={styles.buttonText}>
                     {savedJobs.some(savedJob => savedJob.id === item.id) ? 'Saved' : 'Save Job'}
                   </Text>
@@ -105,8 +126,6 @@ const JobFinderScreen = ({ navigation }) => {
     </View>
   );
 };
-
-export default JobFinderScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -140,6 +159,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 8,
   },
+  jobLocation: {
+    fontSize: 14,
+    marginBottom: 8,
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -162,4 +185,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  savedButton: {
+    backgroundColor: '#007BFF',
+    padding: 8,
+    borderRadius: 6,
+    marginRight: 10,
+  },
+  savedButtonText: {
+    color: '#fff',
+    fontSize: 14,
+  },
 });
+
+export default JobFinderScreen;
